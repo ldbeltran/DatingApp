@@ -38,19 +38,21 @@ namespace DatingApp.API.Controllers {
         }
 
         [HttpPost ("login")]
-        public async Task<IActionResult> Login (UserForLoginDto userForLogin) {
-            var user = await _authRepository.Login (userForLogin.Username, userForLogin.Password);
+        public async Task<IActionResult> Login(UserForLoginDto userForLogin)
+        {
+            var user = await _authRepository.Login(userForLogin.Username, userForLogin.Password);
 
-            if (user == null) {
-                return Unauthorized ();
+            if (user == null)
+            {
+                return Unauthorized();
             }
 
-            var claims = new [] {
+            var claims = new[] {
                 new Claim (ClaimTypes.NameIdentifier, user.Id.ToString ()),
                 new Claim (ClaimTypes.Name, user.Username)
             };
 
-            var key = new SymmetricSecurityKey (Encoding.UTF8.GetBytes (_configuration.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -63,10 +65,10 @@ namespace DatingApp.API.Controllers {
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return Ok(new {
+            return Ok(new
+            {
                 token = tokenHandler.WriteToken(token)
             });
-
         }
     }
 }
